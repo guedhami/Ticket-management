@@ -1,0 +1,116 @@
+.App {
+  text-align: center;
+}
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+.Title{
+  color: #2c5f2d;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.i1{
+  color: #2c5f2d;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-decoration:wavy;
+  font-size: larger;
+}
+.ii{
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+}
+.b1{
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+  color: #2c5f2d;
+  width: 100px;
+}
+.l1{
+  border-radius: 10px;
+  text-decoration: none;
+  border : 3px solid #97bc62ff;
+  color: #2c5f2d;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.cnt1{
+  text-align: center;
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+}
+.cntT{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.TitleB{
+  width: 60vw;
+  color: #2c5f2d;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.uptT{
+  width: 20vw;
+}
+.logoutT{
+  width: 20vw;
+}
+.miniTitle{
+  color: #2c5f2d;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.subElem{
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.element{
+  text-align: center;
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+  width: 30vw;
+  margin: auto;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  margin: 10px;
+}
+.mainCnt{
+  display: flex;
+  flex-wrap: wrap;
+}
+.textArea{
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+}
+.ctnCC{
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+  margin-bottom: 10px;
+}
+.cmnt{
+  width: 80vw;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.ctnCC1{
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 10px;
+  border : 3px solid #97bc62ff;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.cmnt1{
+  text-align: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+
+
