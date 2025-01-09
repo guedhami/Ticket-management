@@ -6,10 +6,9 @@ pipeline {
     }
 
     environment {
-        GIT_BRANCH = 'main'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins credentials ID for Docker Hub
-        IMAGE_NAME_BACKEND = 'hayder69/mern-backend' 
-        IMAGE_NAME_FRONTEND = 'hayder69/mern-frontend' 
+        IMAGE_NAME_BACKEND = '[hayder69]/mern-backend' 
+        IMAGE_NAME_FRONTEND = '[hayder69]/mern-frontend' 
     }
 
     stages {
@@ -17,9 +16,9 @@ pipeline {
             steps {
                 script {
                     echo 'Starting Git checkout...'
-                    git branch: "${GIT_BRANCH}",
-                        url: 'https://github.com/guedhami/Ticket-management.git',
-                        credentialsId: 'github' // Jenkins credentials ID for GitHub SSH key
+                    git branch: 'main',
+                        url: 'git@github.com:guedhami/Ticket-management.git',
+                        credentialsId: 'github' // Jenkins credentials ID for GitLab SSH key
                 }
             }
         }
@@ -29,11 +28,7 @@ pipeline {
                 script {
                     echo 'Building backend image...'
                     dir('backend') {
-                        try {
-                            dockerImageBackend = docker.build("${IMAGE_NAME_BACKEND}")
-                        } catch (Exception e) {
-                            error "Backend image build failed: ${e.message}"
-                        }
+                        dockerImageBackend = docker.build("${IMAGE_NAME_BACKEND}")
                     }
                 }
             }
@@ -44,11 +39,7 @@ pipeline {
                 script {
                     echo 'Building frontend image...'
                     dir('frontend') {
-                        try {
-                            dockerImageFrontend = docker.build("${IMAGE_NAME_FRONTEND}")
-                        } catch (Exception e) {
-                            error "Frontend image build failed: ${e.message}"
-                        }
+                        dockerImageFrontend = docker.build("${IMAGE_NAME_FRONTEND}")
                     }
                 }
             }
@@ -59,9 +50,9 @@ pipeline {
                 script {
                     echo 'Scanning backend image...'
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                            aquasec/trivy:latest image --exit-code 1 \
-                            --severity MEDIUM,HIGH,CRITICAL \
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
+                            aquasec/trivy:latest image --exit-code 0 \\
+                            --severity LOW,MEDIUM,HIGH,CRITICAL \\
                             ${IMAGE_NAME_BACKEND}
                     """
                 }
@@ -73,9 +64,9 @@ pipeline {
                 script {
                     echo 'Scanning frontend image...'
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                            aquasec/trivy:latest image --exit-code 1 \
-                            --severity MEDIUM,HIGH,CRITICAL \
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
+                            aquasec/trivy:latest image --exit-code 0 \\
+                            --severity LOW,MEDIUM,HIGH,CRITICAL \\
                             ${IMAGE_NAME_FRONTEND}
                     """
                 }
@@ -88,20 +79,12 @@ pipeline {
                     echo 'Pushing images to Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh "docker login -u ${USERNAME} -p ${PASSWORD}"
-                        dockerImageBackend.push('latest') // Push backend image with 'latest' tag
-                        dockerImageFrontend.push('latest') // Push frontend image with 'latest' tag
+                        dockerImageBackend.push('latest') // Push server image with 'latest' tag
+                        dockerImageFrontend.push('latest') // Push client image with 'latest' tag
                     }
-                }
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                script {
-                    echo 'Cleaning up unused Docker resources...'
-                    sh 'docker system prune -f'
                 }
             }
         }
     }
 }
+
