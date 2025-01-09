@@ -18,7 +18,7 @@ pipeline {
                 script {
                     echo 'Starting Git checkout...'
                     git branch: "${GIT_BRANCH}",
-                        url: 'git@github.com:guedhami/Ticket-management.git',
+                        url: 'https://github.com/guedhami/Ticket-management.git',
                         credentialsId: 'github' // Jenkins credentials ID for GitHub SSH key
                 }
             }
@@ -59,9 +59,9 @@ pipeline {
                 script {
                     echo 'Scanning backend image...'
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                            aquasec/trivy:latest image --exit-code 1 \\
-                            --severity MEDIUM,HIGH,CRITICAL \\
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy:latest image --exit-code 1 \
+                            --severity MEDIUM,HIGH,CRITICAL \
                             ${IMAGE_NAME_BACKEND}
                     """
                 }
@@ -73,9 +73,9 @@ pipeline {
                 script {
                     echo 'Scanning frontend image...'
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                            aquasec/trivy:latest image --exit-code 1 \\
-                            --severity MEDIUM,HIGH,CRITICAL \\
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy:latest image --exit-code 1 \
+                            --severity MEDIUM,HIGH,CRITICAL \
                             ${IMAGE_NAME_FRONTEND}
                     """
                 }
