@@ -10,7 +10,7 @@ services:
     ports:
       - "9000:9000"
     environment:
-      MONGO_URI: "mongodb+srv://hayderguedhami:12345678Haider@cluster0.fxebywo.mongodb.net/Project 0?retryWrites=true&w=majority&appName=Cluster0"
+      MONGO_URI: "mongodb+srv://hayderguedhami:12345678Haider@cluster0.fxebywo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     restart: always
 
   frontend:
