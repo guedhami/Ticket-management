@@ -1,62 +1,76 @@
-import React ,{useState, useEffect,inputRef} from 'react'
-import axios from 'axios'
-import { useNavigate,useParams } from 'react-router-dom';
-const ViewTicketAdmin =() => {
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+
+const ViewTicketAdmin = () => {
     const navigate = useNavigate();
-    const {id} = useParams('id');    
-    const [tickets , setTickets]=useState([])
-    useEffect(()=>{
-        const fetchData = async () =>{
+    const { id } = useParams();    
+    const [tickets, setTickets] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/api/ticketsManager/${id}`)
-                if(response){
+                const response = await axios.get(`http://localhost:3000/api/ticketsManager/${id}`);
+                if (response && response.data) {
                     setTickets(response.data);
                 }
-            }catch(error){
-                console.error('something went wrong',error);
+            } catch (error) {
+                console.error('Something went wrong', error);
             }
+        };
+        fetchData();
+    }, [id]); // Added id as a dependency
+
+    const updateTicket = (ticketId) => {
+        navigate(`/admin/updateTicketAdmin/${ticketId}`);
     };
-    fetchData();
-},[])
-const updateTicket = (id)=>{
-    navigate(`/admin/updateTicketAdmin/${id}`)
-}
-const delTicket = async(id)=>{
-    try{
-        await axios.delete(`http://localhost:3000/api/tickets/${id}`);
-        window. location. reload();
-    }catch(error){
-        console.error("Error creating Ticket:",error);
-    }
-}
-    return(
-        <div  ref={inputRef}>
-        <div className="">
-            <h1 className='Title'>Tickets List</h1>
-        </div>
-        <div className='ctnCC'>
-            {tickets.map((ticket)=>(
+
+    const delTicket = async (ticketId) => {
+        try {
+            await axios.delete(`http://localhost:3000/api/tickets/${ticketId}`);
+            // Update state to remove the deleted ticket
+            setTickets(tickets.filter(ticket => ticket.id !== ticketId));
+        } catch (error) {
+            console.error("Error deleting Ticket:", error);
+            alert("Failed to delete ticket. Please try again."); // User feedback
+        }
+    };
+
+    return (
+        <div>
+            <div>
+                <h1 className='Title'>Tickets List</h1>
+            </div>
+            <div className='ctnCC'>
+                {tickets.map((ticket) => (
                     <div key={ticket.id} className='element'>
                         <div>
-                            <h3 className='miniTitle'>Description : </h3>
+                            <h3 className='miniTitle'>Description:</h3>
                             <p className='subElem'>{ticket.description}</p>
                             <button
-                            className='b1'
-                             onClick={()=>updateTicket(ticket.id)}>Update</button>
+                                className='b1'
+                                onClick={() => updateTicket(ticket.id)}
+                            >
+                                Update
+                            </button>
                             <button 
-                            className='b1'
-                            onClick={()=>navigate(`/admin/viewTheTicketAdmin/${ticket.id}`)}
-                            >View Ticket</button>
+                                className='b1'
+                                onClick={() => navigate(`/admin/viewTheTicketAdmin/${ticket.id}`)}
+                            >
+                                View Ticket
+                            </button>
                             <button
-                            className='b1'
-                            onClick={()=>delTicket(ticket.id)}
-                            >Delete Ticket</button>
+                                className='b1'
+                                onClick={() => delTicket(ticket.id)}
+                            >
+                                Delete Ticket
+                            </button>
                         </div>
                     </div>
                 ))}
+            </div>
         </div>
-    </div>
     );
 };
-export default ViewTicketAdmin;
 
+export default ViewTicketAdmin;

@@ -1,80 +1,85 @@
-import React,{useState} from 'react';
-import { Link } from 'react-router-dom'
-import {useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const Home =()=>{
-    const [info, setInfo]=useState({});
-    const [errors, setErrors]= useState({});
+
+const Home = () => {
+    const [info, setInfo] = useState({});
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
-    const handleChange = (e) =>{
+    const handleChange = (e) => {
         setInfo({
             ...info,
-            [e.target.name]:e.target.value,
+            [e.target.name]: e.target.value,
         });
     };
-    const handleSubmit = async(e)=>{
-        e.preventDefault();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent default form submission
         console.log(info);
-        try{
-            const response = await axios.post('http://localhost:3000/api/users/login',info);
-            if(response){
+        try {
+            const response = await axios.post('http://localhost:3000/api/users/login', info);
+            if (response) {
                 const id = response.data.id;
-                const idC = response.data.company
-                if(response.data.Job == "Admin"){
-                    navigate(`/admin`);o
+                const idC = response.data.company;
+                if (response.data.Job === "Admin") {
+                    navigate(`/admin`);
                 }
-                if(response.data.Job == "Manager"){
+                if (response.data.Job === "Manager") {
                     navigate(`/manager/${id}/${idC}`);
                 }
-                if(response.data.Job == "none"){
+                if (response.data.Job === "none") {
                     navigate(`/client/${id}`);
                 }
-            }else{
+            } else {
                 console.log('bad request');
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
-            if(error.response && error.response.data && error.response.data.message){
-                setErrors({ server:error.response.data.message});
-            }else{
-                setErrors({server : "an error occured, please try again"});
+            if (error.response && error.response.data && error.response.data.message) {
+                setErrors({ server: error.response.data.message });
+            } else {
+                setErrors({ server: "An error occurred, please try again" });
             }
         }
     };
-    return(
+
+    return (
         <div className='bctn1'>
-            <h1 className='Title'>Sign In</h1> <br/><br/>
-            <div className="cnt1">
+            <h1 className='Title'>Sign In</h1>
+            <br/><br/>
+            <form className="cnt1" onSubmit={handleSubmit}>
                 <div>
-                <div className=''>
-                    <label className='i1'>Email</label><br/><br/>
-                    <input
-                        className='ii'
-                        type='text'
-                        name="email"
-                        id="email"
-                        onChange={handleChange}
-                    />
-                </div><br/><br/>
-                <div className=''>
-                    <label className='i1'>Password</label><br/><br/>
-                    <input
-                    className='ii'
-                        type='password'
-                        name="password"
-                        id="password"
-                        onChange={handleChange}
-                    />
+                    <div>
+                        <label className='i1'>Email</label><br/><br/>
+                        <input
+                            className='ii'
+                            type='text'
+                            name="email"
+                            id="email"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <br/><br/>
+                    <div>
+                        <label className='i1'>Password</label><br/><br/>
+                        <input
+                            className='ii'
+                            type='password'
+                            name="password"
+                            id="password"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <br/>
+                    <button className='b1' type='submit'>Submit</button><br/><br/>
+                    {errors.server && <p className="">{errors.server}</p>}
                 </div>
-                <br/>
-                <button className='b1' type='submit' onClick={handleSubmit}>Submit</button><br/><br/>
-                {errors.server && <p className="">{errors.server}</p>}
-                </div>
-            </div><br/><br/>
-            
+            </form>
+            <br/><br/>
             <Link className="l1" to="/SignUp">Sign Up</Link>
         </div>
     );
 };
+
 export default Home;

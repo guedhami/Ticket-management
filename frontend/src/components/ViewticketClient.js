@@ -1,104 +1,113 @@
-import React ,{useState, useEffect,inputRef} from 'react'
-import axios from 'axios'
-import { useNavigate,useParams } from 'react-router-dom';
-const Ticket_client =() => {
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+
+const Ticket_client = () => {
     const navigate = useNavigate();
-    const {idU,idC} = useParams();    
-    const [tickets , setTickets]=useState([])
-    const [tickett,setNewTickett]=useState([])
-    const handleChange = (e)=>{
-        setNewTickett({
-            ...tickett,
+    const { idU, idC } = useParams();    
+    const [tickets, setTickets] = useState([]);
+    const [ticket, setNewTicket] = useState({});
+
+    const handleChange = (e) => {
+        setNewTicket({
+            ...ticket,
             [e.target.name]: e.target.value,
-            ["company"]:idC,
-            ["user"]:idU,
-            ["date"]:Date().toString()
+            company: idC,
+            user: idU,
+            date: new Date().toISOString(), // Use ISO format for date
         });
     };
-    const handleSubmit = async (e)=>{
-        e.preventDefault();
-        try{
-            console.log(tickett);
-            await axios.post('http://localhost:3000/api/tickets', tickett);
-            window. location. reload();
-        }catch(error){
-            console.error("Error creating Ticket:",error);
-        }
-    };
-    
-    useEffect(()=>{
-        const fetchData = async () =>{
-        try {
-            console.log(idU,idC)
-            const response = await axios.get(`http://localhost:3000/api/ticketsClient/${idU}/${idC}`)
-            if(response){
-                setTickets(response.data)
-            }
-        }catch(error){
-            console.error('something went wrong',error);
-        }
-    };
-    fetchData();
-},[])
-const delTicket = async(id)=>{
-    try{
-        await axios.delete(`http://localhost:3000/api/tickets/${id}`);
-        window. location. reload();
-    }catch(error){
-        console.error("Error deleting Ticket:",error);
-    }
-}
-const updateTicket = (id)=>{
-    navigate(`/updateTicketClient/${id}`)
-}
 
-    return(
-        <div  ref={inputRef}>
-        <div className="">
-            <h1 className='Title'>Tickets List</h1>
-        </div>
-        <div className=''>
-            {tickets.map((ticket)=>(
-                    <div key={ticket.id} className=''>
-                        <div>
-                            <h3 className='miniTitle'>Description : </h3>
-                            <p className='subElem'>{ticket.description}</p>
-                            <button 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3000/api/tickets', ticket);
+            setTickets([...tickets, response.data]); // Update state with the new ticket
+            setNewTicket({}); // Reset the form
+        } catch (error) {
+            console.error("Error creating Ticket:", error);
+            alert("Failed to create ticket. Please try again."); // User feedback
+        }
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3000/api/ticketsClient/${idU}/${idC}`);
+                if (response) {
+                    setTickets(response.data);
+                }
+            } catch (error) {
+                console.error('Something went wrong', error);
+            }
+        };
+        fetchData();
+    }, [idU, idC]); // Dependencies added for useEffect
+
+    const delTicket = async (id) => {
+        try {
+            await axios.delete(`http://localhost:3000/api/tickets/${id}`);
+            setTickets(tickets.filter(ticket => ticket.id !== id)); // Update state
+        } catch (error) {
+            console.error("Error deleting Ticket:", error);
+            alert("Failed to delete ticket. Please try again."); // User feedback
+        }
+    };
+
+    const updateTicket = (id) => {
+        navigate(`/updateTicketClient/${id}`);
+    };
+
+    return (
+        <div>
+            <div>
+                <h1 className='Title'>Tickets List</h1>
+            </div>
+            <div>
+                {tickets.map((ticket) => (
+                    <div key={ticket.id}>
+                        <h3 className='miniTitle'>Description:</h3>
+                        <p className='subElem'>{ticket.description}</p>
+                        <button 
                             className='b1'
-                            onClick={()=>navigate(`/viewTheTicketClient/${ticket.id}`)}
-                            >View Ticket</button>
-                            <button
+                            onClick={() => navigate(`/viewTheTicketClient/${ticket.id}`)}
+                        >
+                            View Ticket
+                        </button>
+                        <button
                             className='b1'
-                            onClick={()=>updateTicket(ticket.id)}
-                            >Update Ticket</button>
-                            <button
+                            onClick={() => updateTicket(ticket.id)}
+                        >
+                            Update Ticket
+                        </button>
+                        <button
                             className='b1'
-                            onClick={()=>delTicket(ticket.id)}
-                            >Delete Ticket</button>
-                        </div>
+                            onClick={() => delTicket(ticket.id)}
+                        >
+                            Delete Ticket
+                        </button>
                     </div>
                 ))}
-        </div>
-        <div className=''>
-            <h1 className='Title'>Add Ticket</h1> 
-            <div className="">
+            </div>
+            <div>
+                <h1 className='Title'>Add Ticket</h1> 
                 <div>
-                <div className=''>
-                    <label className='subElem'>Description</label><br/><br/>
+                    <label className='subElem'>Description</label>
+                    <br /><br />
                     <textarea
-                    className='textArea'
-                    type='text'
-                    name="description"
-                    onChange={handleChange}
-                    requiredplaceholder="enter description"
-                    ></textarea>
-                </div><br/>
-                <button className='b1' onClick={handleSubmit}>Submit</button><br/><br/>
+                        className='textArea'
+                        name="description"
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter description"
+                    />
+                    <br />
+                    <button className='b1' onClick={handleSubmit}>Submit</button>
+                    <br /><br />
                 </div>
-            </div><br/>
+            </div>
         </div>
-    </div>
     );
 };
-export default Ticket_client;
 
+export default Ticket_client;

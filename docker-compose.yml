@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    networks:
+      - mern-network
+    ports:
+      - "9000:9000"
+    environment:
+      MONGO_URI: "mongodb+srv://hayderguedhami:12345678Haider@cluster0.fxebywo.mongodb.net/Project 0?retryWrites=true&w=majority&appName=Cluster0"
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    networks:
+      - mern-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: always
+
+networks:
+  mern-network:
+    driver: bridge
