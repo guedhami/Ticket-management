@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     echo 'Starting Git checkout...'
-                    git branch: 'main',
+                    git branch: 'master',
                         url: 'git@github.com:guedhami/Ticket-management.git',
                         credentialsId: 'github' // Jenkins credentials ID for GitHub SSH key
                 }
