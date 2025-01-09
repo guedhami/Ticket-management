@@ -6,9 +6,10 @@ pipeline {
     }
 
     environment {
+        GIT_BRANCH = 'main'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins credentials ID for Docker Hub
-        IMAGE_NAME_BACKEND = '[hayder69]/mern-backend' 
-        IMAGE_NAME_FRONTEND = '[hayder69]/mern-frontend' 
+        IMAGE_NAME_BACKEND = 'hayder69/mern-backend' 
+        IMAGE_NAME_FRONTEND = 'hayder69/mern-frontend' 
     }
 
     stages {
@@ -16,9 +17,9 @@ pipeline {
             steps {
                 script {
                     echo 'Starting Git checkout...'
-                    git branch: 'master',
+                    git branch: "${GIT_BRANCH}",
                         url: 'git@github.com:guedhami/Ticket-management.git',
-                        credentialsId: 'github' // Jenkins credentials ID for GitLab SSH key
+                        credentialsId: 'github' // Jenkins credentials ID for GitHub SSH key
                 }
             }
         }
@@ -28,7 +29,11 @@ pipeline {
                 script {
                     echo 'Building backend image...'
                     dir('backend') {
-                        dockerImageBackend = docker.build("${IMAGE_NAME_BACKEND}")
+                        try {
+                            dockerImageBackend = docker.build("${IMAGE_NAME_BACKEND}")
+                        } catch (Exception e) {
+                            error "Backend image build failed: ${e.message}"
+                        }
                     }
                 }
             }
@@ -39,7 +44,11 @@ pipeline {
                 script {
                     echo 'Building frontend image...'
                     dir('frontend') {
-                        dockerImageFrontend = docker.build("${IMAGE_NAME_FRONTEND}")
+                        try {
+                            dockerImageFrontend = docker.build("${IMAGE_NAME_FRONTEND}")
+                        } catch (Exception e) {
+                            error "Frontend image build failed: ${e.message}"
+                        }
                     }
                 }
             }
@@ -51,8 +60,8 @@ pipeline {
                     echo 'Scanning backend image...'
                     sh """
                         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                            aquasec/trivy:latest image --exit-code 0 \\
-                            --severity LOW,MEDIUM,HIGH,CRITICAL \\
+                            aquasec/trivy:latest image --exit-code 1 \\
+                            --severity MEDIUM,HIGH,CRITICAL \\
                             ${IMAGE_NAME_BACKEND}
                     """
                 }
@@ -65,8 +74,8 @@ pipeline {
                     echo 'Scanning frontend image...'
                     sh """
                         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                            aquasec/trivy:latest image --exit-code 0 \\
-                            --severity LOW,MEDIUM,HIGH,CRITICAL \\
+                            aquasec/trivy:latest image --exit-code 1 \\
+                            --severity MEDIUM,HIGH,CRITICAL \\
                             ${IMAGE_NAME_FRONTEND}
                     """
                 }
@@ -79,12 +88,20 @@ pipeline {
                     echo 'Pushing images to Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh "docker login -u ${USERNAME} -p ${PASSWORD}"
-                        dockerImageServer.push('latest') // Push server image with 'latest' tag
-                        dockerImageClient.push('latest') // Push client image with 'latest' tag
+                        dockerImageBackend.push('latest') // Push backend image with 'latest' tag
+                        dockerImageFrontend.push('latest') // Push frontend image with 'latest' tag
                     }
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    echo 'Cleaning up unused Docker resources...'
+                    sh 'docker system prune -f'
                 }
             }
         }
     }
 }
-
