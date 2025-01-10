@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ticket-management-frontend
+  template:
+    metadata:
+      labels:
+        app: ticket-management-frontend
+    spec:
+      containers:
+        - name: ticket-management-frontend
+          image: hayder69/ticket-management-frontend:latest  # Replace [username] with your Docker Hub username or registry
+          ports:
+            - containerPort: 9000  # The port your client application listens on
+          envFrom:
+            - configMapRef:
+                name: app-configmap  #

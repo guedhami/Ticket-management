@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ticket-management-backend
+  template:
+    metadata:
+      labels:
+        app: ticket-management-backend
+    spec:
+      containers:
+        - name: ticket-management-backend
+          image: hayder69/ticket-management-backend:latest
+          ports:
+            - containerPort: 9000
+          envFrom:
+            - configMapRef:
+                name: app-configmap
