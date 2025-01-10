@@ -7,8 +7,8 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins credentials ID for Docker Hub
-        IMAGE_NAME_BACKEND = 'hayder69/ticket-management_backend'
-        IMAGE_NAME_FRONTEND = 'hayder69/ticket-management_frontend'
+        IMAGE_NAME_BACKEND = 'hayder69/ticket-management-backend'
+        IMAGE_NAME_FRONTEND = 'hayder69/ticket-management-frontend'
     }
 
     stages {
