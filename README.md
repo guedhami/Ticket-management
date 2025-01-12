@@ -45,6 +45,7 @@ project-directory/
 ├── frontend/
 │   └── Dockerfile
 ├── docker-compose.yml
+├── Jenkinsfile
 └── k8S/
     ├── app-config.yaml
     ├── app-v1.yaml
