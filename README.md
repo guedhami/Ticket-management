@@ -77,8 +77,8 @@ project-directory/
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/ticket-management.git
-   cd ticket-management
+   git clone https://github.com/guedhami/Ticket-management
+   cd Ticket-management
    ```
 
 2. **Build Docker Images**
