@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  labels:
+    app: backend
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    app: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-metrics
+  labels:
+    app: backend
+spec:
+  type: NodePort
+  ports:
+  - name: metrics
+    port: 3002
+    targetPort: metrics
+  selector:
+    app: backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3002"
+    spec:
+      containers:
+      - name: backend
+        image:  hayder69/ticket-management-backend # Replace with your actual image name
+        ports:
+        - name: http
+          containerPort: 9000   # Adjust the container port as per your app's configuration
+        - name: probe
+          containerPort: 9000   # Adjust if needed, this is typically a health check port
+        - name: metrics
+          containerPort: 3002  # Port for Prometheus scraping
+        env:
+        - name: VERSION
+          value: v1.0.0  # Update the version if needed
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: probe   # Health check endpoint
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: probe   # Readiness check endpoint
+          periodSeconds: 5
