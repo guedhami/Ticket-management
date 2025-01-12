@@ -98,7 +98,7 @@ project-directory/
    - Use Minikube or Kind to create a local Kubernetes cluster.
    - Apply the Kubernetes manifests:
      ```bash
-     kubectl apply -f kubernetes/
+     kubectl apply -f k8S/
      ```
 
 5. **Configure Jenkins for CI/CD**
